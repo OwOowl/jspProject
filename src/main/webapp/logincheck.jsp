@@ -9,6 +9,7 @@
 <%@ page import="java.sql.*"%>
 
 <%@ include file="dbconn.jsp"%>
+<%-- 로그인 확인. 세션 --%>
 <%
     request.setCharacterEncoding("utf-8");
 
@@ -27,6 +28,7 @@
 
         if(rs.next()) {
             String userName = rs.getString("user_name");
+//            로그인 정보 세션 저장
             session.setAttribute("userName", userName);
             session.setAttribute("userId", userId);
             session.setAttribute("userPwd", userPwd);

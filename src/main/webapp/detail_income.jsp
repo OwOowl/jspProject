@@ -21,6 +21,20 @@
             integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
             crossorigin="anonymous"></script>
 
+    <script>
+        $(document).ready(function() {
+            let td = $('tbody tr').find('td:last').length;
+            console.log(td);
+
+            for(let i = 0; i < td; i++) {
+                let money = $('tbody tr').find('td:last').eq(i).text();
+                money = money.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                $('tbody tr').find('td:last').eq(i).text(money + '\t원');
+                console.log(money);
+            }
+        });
+    </script>
+
     <style>
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -34,7 +48,7 @@
 <header>
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-4">
-            <h1 class="text-center">입금내역 상세 페이지</h1>
+            <h1 class="text-center">수입내역 상세 페이지</h1>
         </div>
     </div>
 </header>
@@ -48,17 +62,17 @@
 <main class="container mt-4">
     <form action="detail_income2.jsp" method="post" class="row">
         <div class="d-flex justify-content-center my-3">
-            <h5>입금 내역</h5>
+            <h5><%=year%>년 <%=month%>월 수입 내역</h5>
         </div>
         <div class="col-sm-6 my-3">
             <div class="form-floating ms-auto" style="width: 200px">
-                <input type="number" class="form-control" id="year" name="year" value="<%=year%>">
+                <input type="number" class="form-control" id="year" name="year" value="<%=year%>" max="2099" min="2010">
                 <label for="year" class="form-label">년도</label>
             </div>
         </div>
         <div class="col-sm-2 my-3">
             <div class="form-floating " style="width: 200px">
-                <input type="number" class="form-control" id="month" name="month" value="<%=month%>">
+                <input type="number" class="form-control" id="month" name="month" value="<%=month%>" max="12" min="1">
                 <label for="month" class="form-label">월</label>
             </div>
         </div>
@@ -69,8 +83,8 @@
             <table class="table table-hover table-striped">
                 <thead class="text-center">
                 <tr>
-                    <th>입금</th>
-                    <th>입금날짜</th>
+                    <th>수입/지출</th>
+                    <th>입금일</th>
                     <th>내역</th>
                     <th>금액</th>
                 </tr>
@@ -83,7 +97,7 @@
                     try {
                         String sql = "select flow_si, history_date, text, money from tblhistory where user_id = ? AND flow_si = 'I' ";
 
-                        if(year != null || year.trim().equals("")) {
+                        if(!year.trim().equals("")) {
                             if(month.length() == 0) {
                                 sql += "AND history_date LIKE '%" + year + "%' ";
                             }
@@ -95,6 +109,17 @@
                                 sql += "AND history_date LIKE '%" + date + "%' ";
                             }
                         }
+                        else if(year.trim().equals("")) {
+                            if(month.length() == 1) {
+                                date = year + "-0" + month;
+                                sql += "AND history_date LIKE '%" + date + "%' ";
+                            }
+                            else if(month.length() == 2) {
+                                sql += "AND history_date LIKE '%" + date + "%' ";
+                            }
+                        } else if ((year.trim().equals("") && month.trim().equals(""))) {
+                            sql += "AND history_date LIKE '%" + year + "%' ";
+                        }
 
                         sql += " ORDER BY history_date DESC";
                         pstmt = conn.prepareStatement(sql);
@@ -104,10 +129,10 @@
                         while(rs.next()) {
                             String flow = rs.getString("flow_si");
                             if (flow.equals("S")) {
-                                flow = "출금";
+                                flow = "지출";
                             }
                             else if (flow.equals("I")) {
-                                flow = "입금";
+                                flow = "수입";
                             }
                             String historyDate = rs.getString("history_date");
                             historyDate = historyDate.substring(0, 10);
@@ -118,7 +143,7 @@
                     <td><%=flow%></td>
                     <td><%=historyDate%></td>
                     <td><%=text%></td>
-                    <td><%=money%>원</td>
+                    <td><%=money%></td>
                 </tr>
                 <%
                         }

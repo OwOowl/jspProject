@@ -23,13 +23,25 @@
         $(document).ready(function () {
             let date = new Date();
             let month = date.getMonth() + 1;
-            let yser = date.getFullYear();
+            let year = date.getFullYear();
 
             $('#year1').attr('value', year);
             $('#year2').attr('value', year);
+            $('#year3').attr('value', year);
             $('#month1').attr('value', month);
             $('#month2').attr('value', month);
-            console.log(month);
+            $('#month3').attr('value', month);
+
+            let td = $('tbody tr').find('td:last').length;
+            console.log(td);
+
+            for(let i = 0; i < td; i++) {
+                let money = $('tbody tr').find('td:last').eq(i).text();
+                money = money.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                $('tbody tr').find('td:last').eq(i).text(money + '\t원');
+                console.log(money);
+            }
+
         })
     </script>
 </head>
@@ -38,7 +50,7 @@
 <header>
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-4">
-            <h1 class="text-center">지출/입금 페이지</h1>
+            <h1 class="text-center">수입/지출 내역 페이지</h1>
         </div>
     </div>
 </header>
@@ -52,8 +64,8 @@
             <table class="table table-hover table-striped">
                 <thead class="text-center">
                 <tr>
-                    <th>지출</th>
-                    <th>지출날짜</th>
+                    <th>수입/지출</th>
+                    <th>지출일</th>
                     <th>내역</th>
                     <th>금액</th>
                 </tr>
@@ -72,10 +84,10 @@
                         while(rs.next()) {
                             String flow = rs.getString("flow_si");
                             if (flow.equals("S")) {
-                                flow = "출금";
+                                flow = "지출";
                             }
                             else if (flow.equals("I")) {
-                                flow = "입금";
+                                flow = "수입";
                             }
                             String historyDate = rs.getString("history_date");
                             historyDate = historyDate.substring(0, 10);
@@ -86,7 +98,7 @@
                     <td><%=flow%></td>
                     <td><%=historyDate%></td>
                     <td><%=text%></td>
-                    <td><%=money%>원</td>
+                    <td><%=money%></td>
                 </tr>
                 <%
                         }
@@ -105,16 +117,16 @@
         </div>
     </form>
 
-    <form action="detail_income.jsp" method="post" class="row mt-5">
+    <form action="detail_income.jsp" method="post" class="row mt-5" id="frm">
         <div class="d-flex justify-content-center my-2">
-            <h5>입금 내역</h5>
+            <h5>수입 내역</h5>
         </div>
         <div class="col-sm">
             <table class="table table-hover table-striped">
                 <thead class="text-center">
                 <tr>
-                    <th>입금</th>
-                    <th>입금날짜</th>
+                    <th>수입/지출</th>
+                    <th>입금일</th>
                     <th>내역</th>
                     <th>금액</th>
                 </tr>
@@ -134,10 +146,10 @@
                         while(rs.next()) {
                             String flow = rs.getString("flow_si");
                             if (flow.equals("S")) {
-                                flow = "출금";
+                                flow = "지출";
                             }
                             else if (flow.equals("I")) {
-                                flow = "입금";
+                                flow = "수입";
                             }
                             String historyDate = rs.getString("history_date");
                             historyDate = historyDate.substring(0, 10);
@@ -148,7 +160,7 @@
                     <td><%=flow%></td>
                     <td><%=historyDate%></td>
                     <td><%=text%></td>
-                    <td><%=money%>원</td>
+                    <td><%=money%></td>
                 </tr>
                 <%
                         }
@@ -167,10 +179,15 @@
             <div class="d-flex justify-content-end">
                 <input type="hidden" name="year" value="" id="year2">
                 <input type="hidden" name="month" value="" id="month2">
-                <button class="btn btn-outline-primary me-2" type="submit">입금 내역 더보기</button>
-                <a href="main.jsp" class="btn btn-outline-secondary">가계부 돌아가기</a>
+                <a href="main.jsp" class="btn btn-outline-secondary me-auto">가계부 돌아가기</a>
+                <button class="btn btn-outline-primary" type="submit" id="income">수입 내역 더보기</button>
             </div>
         </div>
+    </form>
+    <form action="detail_all.jsp" class="d-flex justify-content-end mt-0" method="post">
+        <input type="hidden" name="year" value="" id="year3">
+        <input type="hidden" name="month" value="" id="month3">
+        <button class="btn btn-outline-success" type="submit" id="all">전체 내역 더보기</button>
     </form>
 </main>
 

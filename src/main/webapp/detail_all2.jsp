@@ -1,11 +1,10 @@
 <%--
   Created by IntelliJ IDEA.
-  User: yang
-  Date: 2022-12-01
-  Time: 오후 10:57
+  User: admin
+  Date: 2022-12-02
+  Time: 오후 12:23
   To change this template use File | Settings | File Templates.
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.sql.*" %>
 <html>
@@ -48,7 +47,7 @@
 <header>
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-4">
-            <h1 class="text-center">지출내역 상세 페이지</h1>
+            <h1 class="text-center">전체내역 상세 페이지</h1>
         </div>
     </div>
 </header>
@@ -60,9 +59,9 @@
     String date = year + "-" + month;
 %>
 <main class="container mt-4">
-    <form action="detail_spending.jsp" method="post" class="row">
+    <form action="detail_all.jsp" method="post" class="row">
         <div class="d-flex justify-content-center my-3">
-            <h5><%=year%>년 <%=month%>월 지출 내역</h5>
+            <h5>수입/지출 내역</h5>
         </div>
         <div class="col-sm-6 my-3">
             <div class="form-floating ms-auto" style="width: 200px">
@@ -80,11 +79,11 @@
             <button class="btn btn-outline-primary h-100 pt-2" type="submit">검색</button>
         </div>
         <div class="col-sm-12">
-            <table class="table table-hover table-striped">
+            <table class="table table-striped">
                 <thead class="text-center">
                 <tr>
-                    <th>지출</th>
-                    <th>지출날짜</th>
+                    <th>수입/지출</th>
+                    <th>수입일/지출일</th>
                     <th>내역</th>
                     <th>금액</th>
                 </tr>
@@ -95,7 +94,7 @@
                     PreparedStatement pstmt = null;
                     ResultSet rs = null;
                     try {
-                        String sql = "select flow_si, history_date, text, money from tblhistory where user_id = ? AND flow_si = 'S' ";
+                        String sql = "select flow_si, history_date, text, money from tblhistory where user_id = ?";
 
                         if(!year.trim().equals("")) {
                             if(month.length() == 0) {
@@ -129,7 +128,7 @@
                         while(rs.next()) {
                             String flow = rs.getString("flow_si");
                             if (flow.equals("S")) {
-                                flow = "출금";
+                                flow = "지출";
                             }
                             else if (flow.equals("I")) {
                                 flow = "입금";
@@ -138,14 +137,22 @@
                             historyDate = historyDate.substring(0, 10);
                             String text = rs.getString("text");
                             int money = rs.getInt("money");
+
+                            if(flow.equals("지출")) {
+
+
                 %>
                 <tr>
-                    <td><%=flow%></td>
-                    <td><%=historyDate%></td>
-                    <td><%=text%></td>
-                    <td><%=money%></td>
+                    <td class="text-danger"><%=flow%></td>
+                    <td class="text-danger"><%=historyDate%></td>
+                    <td class="text-danger"><%=text%></td>
+                    <td class="text-danger"><%=money%></td>
                 </tr>
                 <%
+                            } else {
+                                out.print("<tr> <td class='text-success'>" + flow + "</td> <td  class='text-success'>" + historyDate + "</td> <td  class='text-success'>" +
+                                        text +"</td> <td  class='text-success'>" + money + "</td> </tr>");
+                            }
                         }
                     }
                     catch (SQLException e) {

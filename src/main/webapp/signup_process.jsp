@@ -44,6 +44,8 @@
                         "history.back();</script>");
             }
             else {
+                out.print("<script>alert('회원가입 완료');" +
+                        "history.go(-2)</script>");
                 sql ="INSERT INTO tbluser(user_id, user_pwd, user_name, user_email) VALUES(?, ?, ?, ?)";
 
                 pstmt = conn.prepareStatement(sql);
@@ -53,9 +55,7 @@
                 pstmt.setString(4, userEmail);
                 pstmt.executeUpdate();
 
-                out.print("<script>alert('회원가입 완료');</script>");
-
-                response.sendRedirect("login.jsp");
+//                response.sendRedirect("login.jsp");
             }
 
         }

@@ -20,6 +20,19 @@
             integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
             crossorigin="anonymous"></script>
 
+    <script>
+        $(document).ready(function() {
+            let td = $('tbody tr').find('td:last').length;
+            console.log(td);
+
+            for(let i = 0; i < td; i++) {
+                let money = $('tbody tr').find('td:last').eq(i).text();
+                money = money.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                $('tbody tr').find('td:last').eq(i).text(money + '\t원');
+                console.log(money);
+            }
+        });
+    </script>
     <style>
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -47,7 +60,7 @@
 <main class="container mt-4">
     <form action="detail_spending2.jsp" method="post" class="row">
         <div class="d-flex justify-content-center my-3">
-            <h5>지출 내역</h5>
+            <h5><%=year%>년 <%=month%>월 지출 내역</h5>
         </div>
         <div class="col-sm-6 my-3">
             <div class="form-floating ms-auto" style="width: 200px">
@@ -82,17 +95,28 @@
                     try {
                         String sql = "select flow_si, history_date, text, money from tblhistory where user_id = ? AND flow_si = 'S' ";
 
-                        if(year != null || year.trim().equals("")) {
-                            if(month.length() == 1) {
+                        if(!year.trim().equals("")) {
+                            if(month.length() == 0) {
+                                sql += "AND history_date LIKE '%" + year + "%' ";
+                            }
+                            else if(month.length() == 1) {
                                 date = year + "-0" + month;
                                 sql += "AND history_date LIKE '%" + date + "%' ";
-                            }
-                            else if(month.length() == 0) {
-                                sql += "AND history_date LIKE '%" + year + "%' ";
                             }
                             else if(month.length() == 2) {
                                 sql += "AND history_date LIKE '%" + date + "%' ";
                             }
+                        }
+                        else if(year.trim().equals("")) {
+                            if(month.length() == 1) {
+                                date = year + "-0" + month;
+                                sql += "AND history_date LIKE '%" + date + "%' ";
+                            }
+                            else if(month.length() == 2) {
+                                sql += "AND history_date LIKE '%" + date + "%' ";
+                            }
+                        } else if ((year.trim().equals("") && month.trim().equals(""))) {
+                            sql += "AND history_date LIKE '%" + year + "%' ";
                         }
 
                         sql += " ORDER BY history_date DESC";
@@ -118,7 +142,7 @@
                     <td><%=flow%></td>
                     <td><%=historyDate%></td>
                     <td><%=text%></td>
-                    <td><%=money%>원</td>
+                    <td><%=money%></td>
                 </tr>
                 <%
                         }
